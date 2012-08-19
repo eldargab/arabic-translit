@@ -1,0 +1,15 @@
+{
+  "name": "arabic-translit",
+  "version": "0.0.1alpha",
+  "description": "Non-traditional, non-keyboard macro, fluent transliteration for arabic language",
+  "main": "lib/index",
+  "author": "Eldar Gabdullin <eldargab@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "test": "mocha -R spec"
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "should": "*"
+  }
+}
