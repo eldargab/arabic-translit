@@ -1,0 +1,11 @@
+{
+  "name": "arabic-translit-site",
+  "version": "0.0.0",
+  "author": "Eldar Gabdullin <eldargab@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "shelljs": "*",
+    "jade": "*",
+    "exposer": "git://github.com/eldargab/exposer.js.git"
+  }
+}

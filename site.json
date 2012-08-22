@@ -1,0 +1,5 @@
+{
+  "build": ["node", "make.js", "build"],
+  "watch": ["src"],
+  "port": 3000
+}

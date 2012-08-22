@@ -1,0 +1,23 @@
+!!! 5
+
+html
+  head
+    title Arabic translit
+    link(rel='stylesheet', href='style.css')
+    script(src='http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.js')
+    script(src='app.js')
+
+  body
+    #tips(data-bind='tips')
+
+    .container
+      ul.controls
+        li: label
+          input(type='checkbox', data-bind='value:enabled')
+          | Transliteration
+        li: label
+          input(type='checkbox', data-bind='value:quirks')
+          | Quirks
+        //- li.help: a(data-bind='event-click|stop:showHelp', href='#help') Help
+
+      textarea#translit-edit(data-bind='translitEdit')
