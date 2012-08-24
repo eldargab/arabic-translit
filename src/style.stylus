@@ -11,7 +11,7 @@ body
   line-height 18px
   color #555
 
-.container
+#container
   width width
   margin-left auto
   margin-right auto
@@ -39,7 +39,8 @@ ul.controls
   width width
   li
     display inline
+    padding-right 5px
     input[type='checkbox']
       vertical-align middle
-    &.help
+    &.link
       float right

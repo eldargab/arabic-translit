@@ -6,6 +6,8 @@
   "devDependencies": {
     "shelljs": "*",
     "jade": "*",
-    "exposer": "git://github.com/eldargab/exposer.js.git"
+    "exposer": "git://github.com/eldargab/exposer.js.git",
+    "arabic-translit": "git://github.com/eldargab/arabic-translit.git",
+    "point": "git://github.com/eldargab/point.git#c4e03e088c37af5d15c657caa972f25ff5d91fa9"
   }
 }

@@ -3,21 +3,23 @@
 html
   head
     title Arabic translit
+    meta(http-equiv='Content-Type', content='text/html', charset='UTF-8')
     link(rel='stylesheet', href='style.css')
     script(src='http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.js')
-    script(src='app.js')
+    script(src='app.js', charset='UTF-8')
 
   body
-    #tips(data-bind='tips')
-
-    .container
+    #container
       ul.controls
         li: label
           input(type='checkbox', data-bind='value:enabled')
-          | Transliteration
+          | transliterate
         li: label
           input(type='checkbox', data-bind='value:quirks')
-          | Quirks
-        //- li.help: a(data-bind='event-click|stop:showHelp', href='#help') Help
+          | quirks
+        li: label
+          input(type='checkbox', data-bind='value: diacritics')
+          | diacritics
+        //- li.link: a(data-bind='event-click|stop:showHelp, text:local.help', href='#help')
 
       textarea#translit-edit(data-bind='translitEdit')

@@ -1,0 +1,48 @@
+html {
+  background: #ececec;
+  background: -moz-linear-gradient(-90deg, #fff, #ececec) fixed;
+  background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#ececec)) fixed;
+}
+body {
+  font: 13px 'helvetica neue', helvetica, arial, sans-serif;
+  line-height: 18px;
+  color: #555;
+}
+#container {
+  width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+#container #translit-edit {
+  width: 600px;
+  height: 500px;
+  margin-top: 5px;
+  direction: rtl;
+  font-size: 18px;
+  line-height: 30px;
+  color: #555;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  -webkit-transition: border linear 0.2s, box-shadow linear 0.2s;
+}
+#container #translit-edit:focus {
+  border-color: rgba(204,204,204,0.8);
+  outline: 0;
+  box-shadow: inset 0 1px 1px rgba(0,0,0,0.075), 0 0 8px rgba(204,204,204,0.6);
+}
+ul.controls {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 600px;
+}
+ul.controls li {
+  display: inline;
+  padding-right: 5px;
+}
+ul.controls li input[type='checkbox'] {
+  vertical-align: middle;
+}
+ul.controls li.link {
+  float: right;
+}

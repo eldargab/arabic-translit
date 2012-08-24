@@ -1,5 +1,5 @@
 {
   "build": ["node", "make.js", "build"],
-  "watch": ["src"],
+  "watch": ["src", "node_modules"],
   "port": 3000
 }
