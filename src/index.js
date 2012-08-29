@@ -3,22 +3,16 @@ var $ = require('jquery')
 var T = require('./translit')
 var shortcuts = require('./shortcuts')
 
-shortcuts.on('command', function (cmd) {
-    if (typeof T[cmd] == 'function') T[cmd]()
-})
-
-
 var view = new Point.View
 
-view.attach(T)
-
+view.attach('translit', T)
+view.attach('tips', require('./tips'))
 
 view.on('bind', function () {
     $(this.el).on('keyup', function (ev) {
         shortcuts.handle(ev)
     })
 })
-
 
 view.point_translitEdit = function (el) {
     var prev
@@ -51,7 +45,6 @@ view.point_translitEdit = function (el) {
         el.selectionStart = el.selectionEnd = cursorPos
     }
 }
-
 
 $(function () {
     view.render(document.body)

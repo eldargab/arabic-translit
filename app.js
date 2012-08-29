@@ -342,6 +342,7 @@ Model.prototype.onset = function (attr, val) {
 
 Model.prototype._set = function (attr, val) {
     this._thisAttributes()[attr] = val
+    this.emit('change', attr)
     this.emit('change:' + attr, attr)
 }
 
@@ -444,6 +445,21 @@ ForEach.prototype.resort = function () {
         view.detach()
         view.attach(obj)
     }, this)
+}
+})
+require.register("point/endpoints/html", function(module, exports, require) {
+module.exports = Html
+
+function Html (el) {
+    this.el = el
+}
+
+Html.prototype.get = function () {
+    return this.el.innerHTML
+}
+
+Html.prototype.set = function (html) {
+    this.el.innerHTML = html
 }
 })
 require.register("point/endpoints/value", function(module, exports, require) {
@@ -1309,22 +1325,16 @@ var $ = require('jquery')
 var T = require('./translit')
 var shortcuts = require('./shortcuts')
 
-shortcuts.on('command', function (cmd) {
-    if (typeof T[cmd] == 'function') T[cmd]()
-})
-
-
 var view = new Point.View
 
-view.attach(T)
-
+view.attach('translit', T)
+view.attach('tips', require('./tips'))
 
 view.on('bind', function () {
     $(this.el).on('keyup', function (ev) {
         shortcuts.handle(ev)
     })
 })
-
 
 view.point_translitEdit = function (el) {
     var prev
@@ -1358,13 +1368,11 @@ view.point_translitEdit = function (el) {
     }
 }
 
-
 $(function () {
     view.render(document.body)
 })
 })
 require.register("app/util", function(module, exports, require) {
-var Emitter = require('point').Emitter
 
 exports.read = function (area) {
     try {
@@ -1378,54 +1386,12 @@ exports.save = function (area, obj) {
     localStorage.setItem(area, JSON.stringify(obj))
 }
 
-
-var Map = exports.Map = Emitter.extend()
-
-Map.prototype.del = function (key) {
-    if (this._attr) {
-        delete this._attr[key]
-        this.emit('change')
-    }
-}
-
-Map.prototype.forEach = function (cb, ctx) {
-    ctx = ctx || this
-    for (var key in this._attr) {
-        var ret = cb.call(ctx, key, this._attr[key])
-        if (ret === false) return
-    }
-}
-
-Map.prototype.set = function (key, val) {
-    this._attr = this._attr || {}
-    this._attr[key] = val
-    this.emit('change')
-}
-
-Map.prototype.get = function (key) {
-    return this._attr && this._attr[key]
-}
-
-Map.prototype.reset = function (initials) {
-    this._attr = initials
-}
-
-Map.prototype.toJSON = function () {
-    return this._attr
-}
-
-
-exports.toggle = function (flag) {
-    this['toggle' + flag[0].toUpperCase() + flag.slice(1)] = function () {
-        this.set(flag, !this.get(flag))
-    }
-}
-
 })
 require.register("app/translit", function(module, exports, require) {
 var T = require('arabic-translit')
 var Point = require('point')
 var util = require('./util')
+var shortcuts = require('./shortcuts')
 
 var config = module.exports = function () {
     return config.get('transliterate')
@@ -1433,27 +1399,14 @@ var config = module.exports = function () {
 
 Point.use.call(config, Point.Model)
 
-config.use('subobject', 'mappings', util.Map)
-
 config.reset(util.read('translit') || {
     enabled: true,
     quirks: true,
     diacritics: true
 })
 
-config.save = function () {
+config.on('change', function () {
     util.save('translit', this)
-}
-
-config.onevent(function (ev) {
-    if (!~ev.indexOf('change:')) return
-    config.save()
-    config.emit('change')
-})
-
-config.mappings().on('change', function () {
-    config.save()
-    config.emit('change')
 })
 
 config.use('computable', 'transliterate', ['change'], function () {
@@ -1461,26 +1414,31 @@ config.use('computable', 'transliterate', ['change'], function () {
     return T(this.toJSON())
 })
 
-config
-.use(util.toggle, 'enabled')
-.use(util.toggle, 'quirks')
-.use(util.toggle, 'diacritics')
+registerToggleCommand('enabled')
+registerToggleCommand('quirks')
+registerToggleCommand('diacritics')
 
+function registerToggleCommand (attr) {
+    shortcuts.command('toggle-' + attr, function () {
+        config.set(attr, !config.get(attr))
+    })
+}
 })
 require.register("app/shortcuts", function(module, exports, require) {
-var util = require('./util')
+var shortcuts = module.exports = {}
 
-var shortcuts = module.exports = new util.Map
+shortcuts.map = {
+    'alt-shift-t': 'toggle-enabled',
+    'alt-shift-q': 'toggle-quirks',
+    'alt-shift-d': 'toggle-diacritics',
+    'alt-shift-h': 'toggle-tips'
+}
 
-shortcuts.reset(util.read('shortcuts') || {
-    'alt-shift-t': 'toggleEnabled',
-    'alt-shift-q': 'toggleQuirks',
-    'alt-shift-d': 'toggleDiacritics'
-})
+shortcuts.commands = {}
 
-shortcuts.on('change', function () {
-    util.save('shortcuts', this)
-})
+shortcuts.command = function (name, fn) {
+    this.commands[name] = fn
+}
 
 shortcuts.handle = function (e) {
     var keys = []
@@ -1490,8 +1448,110 @@ shortcuts.handle = function (e) {
     var keyCode = e.charCode || e.keyCode
     var key = keyCode && String.fromCharCode(keyCode)
     key && keys.push(key)
-    var command = this.get(keys.join('-').toLowerCase())
-    this.emit('command', command)
+    var cmd = this.map[keys.join('-').toLowerCase()]
+    if (cmd) {
+        this.commands[cmd]()
+        e.stopPropagation()
+        e.preventDefault()
+    }
+}
+
+})
+require.register("app/tips/index", function(module, exports, require) {
+var map = require('arabic-translit').symbols
+var util = require('../util')
+var shortcuts = require('../shortcuts')
+var Point = require('point')
+var $ = require('jquery')
+var template = require('./template')
+
+var model = module.exports = new Point.Model
+
+model.reset(util.read('tips') || {
+    hide: false
+})
+
+model.on('change', function () {
+    util.save('tips', this)
+})
+
+shortcuts.command('toggle-tips', function () {
+    model.set('hide', !model.get('hide'))
+})
+
+var view = new Point.View
+
+view.html = $('<div id="tips" data-bind="css-hide:hide">' + template(map) + '</div>')[0]
+view.attach(model)
+view.render()
+
+$(function () {
+    document.body.appendChild(view.el)
+})
+})
+require.register("app/tips/template", function(module, exports, require) {
+var arabic = require('arabic-translit').arabic
+var diacritics = new RegExp('^[' + arabic.diacritics + ']$')
+
+module.exports = function template (map) {
+    var blockSize = 20
+    var help = new HelpTable(map).toArray()
+    var html = '<table><tbody>'
+    var block = 0
+    for (var i = 0, block = 0; i < help.length; i++, block++) {
+        if (block == blockSize) {
+            block = 0
+            if (i < help.length - 1) html += '</tbody><tbody>'
+        }
+        html += '<tr>'
+        html += '<td class="arabic">' + help[i].arabic + '</td>'
+        html += '<td class="translit">' + help[i].translit + '</td>'
+        html += '</tr>'
+    }
+    return html + '</tbody></table>'
+}
+
+function HelpTable (map) {
+    this.table = {}
+    this.map = map
+    this.generate()
+}
+
+HelpTable.prototype.generate = function () {
+    this.forEachSymbol(function (s, ar) {
+        ar = this.normalize(ar)
+        var item = this.table[ar]
+        if (!item) {
+            this.table[ar] = {
+                arabic: ar,
+                translit: s
+            }
+        } else {
+            item.translit += ', ' + s
+        }
+    })
+}
+
+HelpTable.prototype.forEachSymbol = function (cb) {
+    for (var key in this.map) {
+        cb.call(this, key, this.map[key])
+    }
+}
+
+HelpTable.prototype.normalize = function (ar) {
+    return diacritics.test(ar)
+        ? ar + '-'
+        : ar
+}
+
+HelpTable.prototype.toArray = function () {
+    var arr = []
+    for (var key in this.table) {
+        arr.push(this.table[key])
+    }
+    return arr.sort(function (a, b) {
+        return a.arabic.localeCompare(b.arabic)
+    })
 }
 
 })

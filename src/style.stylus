@@ -1,4 +1,6 @@
-width = 600px
+@import 'nib'
+
+$width = 600px
 
 html
   dark = #ECECEC
@@ -11,32 +13,37 @@ body
   line-height 18px
   color #555
 
+
 #container
-  width width
+  width $width
+  height 500px
   margin-left auto
   margin-right auto
 
   #translit-edit
-    width width
-    height 500px
+    width $width
     margin-top 5px
     direction rtl
     font-size 18px
     line-height 30px
+    height 520px // line-height * N + padding-top + padding-bottom
+    padding 5px
+    margin-top 5px
     color #555
+    background-color rgba(white, 0.3)
     border-radius 5px
     border 1px solid #ccc
     &:focus
       border-color rgba(204,204,204,.8)
       outline 0
       box-shadow inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(204,204,204,.6)
-    -webkit-transition border linear .2s, box-shadow linear .2s
+      transition border linear .2s, box-shadow linear .2s
 
 ul.controls
   list-style none
   margin 0
   padding 0
-  width width
+  width $width
   li
     display inline
     padding-right 5px
@@ -44,3 +51,32 @@ ul.controls
       vertical-align middle
     &.link
       float right
+
+#tips
+  position absolute
+  top 19px + 5px + 8px
+  margin 0
+  padding 5px
+  background-color rgba(white, 0.3)
+  border 1px solid #ddd
+  border-radius 5px
+  border-spacing 0
+  transition opacity linear .2s, left linear .2s
+  &.hide
+    opacity 0
+    left -200px
+
+  tbody
+    float left
+    margin-left 10px
+
+  tbody:first-child
+    margin-left 0
+
+  .arabic
+    text-align right
+    padding-right 5px
+  .translit
+    &:before
+      content '\2192'
+      padding-right 5px

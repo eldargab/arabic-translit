@@ -12,14 +12,17 @@ html
     #container
       ul.controls
         li: label
-          input(type='checkbox', data-bind='value:enabled')
+          input(type='checkbox', data-bind='value:translit.enabled')
           | transliterate
         li: label
-          input(type='checkbox', data-bind='value:quirks')
+          input(type='checkbox', data-bind='value:translit.quirks')
           | quirks
         li: label
-          input(type='checkbox', data-bind='value: diacritics')
+          input(type='checkbox', data-bind='value:translit.diacritics')
           | diacritics
+        li: label
+          input(type='checkbox', data-bind='value|not:tips.hide')
+          | tips
         //- li.link: a(data-bind='event-click|stop:showHelp, text:local.help', href='#help')
 
       textarea#translit-edit(data-bind='translitEdit')

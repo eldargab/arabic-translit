@@ -21,6 +21,7 @@ target.css = function () {
     var src = 'src/style.stylus'
     require('stylus')(cat(src))
         .set('filename', src)
+        .use(require('nib')())
         .render(function (err, css) {
             if (err) error(err)
             css.to('style.css')
@@ -31,7 +32,7 @@ target.js = function () {
     require('exposer').Bundle('app.js', function () {
         this.add('node_modules/point', 'lib', {as: 'point'})
         this.add('node_modules/arabic-translit', 'lib', {as: 'arabic-translit'})
-        this.add('src/js', '.', {as: 'app'})
+        this.add('src', '.', {as: 'app'})
         this.includeRequire()
         this.append('require.register("jquery", function (module) { module.exports = $})')
         this.append('require("app")')

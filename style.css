@@ -10,25 +10,35 @@ body {
 }
 #container {
   width: 600px;
+  height: 500px;
   margin-left: auto;
   margin-right: auto;
 }
 #container #translit-edit {
   width: 600px;
-  height: 500px;
   margin-top: 5px;
   direction: rtl;
   font-size: 18px;
   line-height: 30px;
+  height: 520px;
+  padding: 5px;
+  margin-top: 5px;
   color: #555;
+  background-color: rgba(255,255,255,0.3);
+  -webkit-border-radius: 5px;
   border-radius: 5px;
   border: 1px solid #ccc;
-  -webkit-transition: border linear 0.2s, box-shadow linear 0.2s;
 }
 #container #translit-edit:focus {
   border-color: rgba(204,204,204,0.8);
   outline: 0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075), 0 0 8px rgba(204,204,204,0.6);
   box-shadow: inset 0 1px 1px rgba(0,0,0,0.075), 0 0 8px rgba(204,204,204,0.6);
+  -webkit-transition: border linear 0.2s, box-shadow linear 0.2s;
+  -moz-transition: border linear 0.2s, box-shadow linear 0.2s;
+  -o-transition: border linear 0.2s, box-shadow linear 0.2s;
+  -ms-transition: border linear 0.2s, box-shadow linear 0.2s;
+  transition: border linear 0.2s, box-shadow linear 0.2s;
 }
 ul.controls {
   list-style: none;
@@ -45,4 +55,41 @@ ul.controls li input[type='checkbox'] {
 }
 ul.controls li.link {
   float: right;
+}
+#tips {
+  position: absolute;
+  top: 32px;
+  margin: 0;
+  padding: 5px;
+  background-color: rgba(255,255,255,0.3);
+  border: 1px solid #ddd;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  border-spacing: 0;
+  -webkit-transition: opacity linear 0.2s, left linear 0.2s;
+  -moz-transition: opacity linear 0.2s, left linear 0.2s;
+  -o-transition: opacity linear 0.2s, left linear 0.2s;
+  -ms-transition: opacity linear 0.2s, left linear 0.2s;
+  transition: opacity linear 0.2s, left linear 0.2s;
+}
+#tips.hide {
+  opacity: 0;
+  -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
+  filter: alpha(opacity=0);
+  left: -200px;
+}
+#tips tbody {
+  float: left;
+  margin-left: 10px;
+}
+#tips tbody:first-child {
+  margin-left: 0;
+}
+#tips .arabic {
+  text-align: right;
+  padding-right: 5px;
+}
+#tips .translit:before {
+  content: '\2192';
+  padding-right: 5px;
 }
